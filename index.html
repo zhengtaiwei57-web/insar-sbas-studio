@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>InSAR · 形变分析工作台</title>
+  <meta name="description" content="浏览器中的 Python SBAS 工具：导入已解缠干涉栈、分析相对 LOS 形变、查看时序并导出结果。">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./" aria-label="InSAR 工作台首页"><span class="brand-icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="11"/><circle cx="16" cy="16" r="6"/><path d="M16 3v13l9 7M3 16h5"/><circle cx="16" cy="16" r="1.6" fill="currentColor"/></svg></span><b>InSAR<span> / </span>Studio</b></a>
+  <nav><span class="local-badge"><i></i>在你的浏览器中计算</span><button class="text-btn" id="help-open">使用说明 ↗</button></nav>
+</header>
+<main>
+  <section class="intro"><div><div class="eyebrow">SYNTHETIC APERTURE RADAR · SBAS</div><h1>让每一期位移，清晰可见。</h1><p>从已解缠干涉栈，到形变速度与时间序列。用 Python，在浏览器中完成分析。</p></div><span class="version">WORKSPACE <b>01</b></span></section>
+  <div class="workspace">
+    <aside class="sidebar">
+      <section class="panel import-panel"><div class="section-title"><span class="step">01</span><h2>导入数据</h2></div>
+        <label class="dropzone" id="dropzone" for="file-input"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M11 5H5v22h22V11M17 4v14m-5-9 5-5 5 5M10 22h12"/></svg><b id="file-name">选择或拖入干涉栈</b><span>支持 .npz · 文件最大 25 MB</span></label><input type="file" id="file-input" accept=".npz" hidden>
+        <p class="field-note">输入需包含已解缠相位、相干性和日期对。<button class="inline-link" id="format-help">查看格式</button></p>
+        <div class="divider"><span>先了解工作流程</span></div>
+        <button id="demo-button" class="demo-btn"><span>◈</span><span><b>试用模拟数据</b><small>12 期观测 · 形变盆地示例</small></span><span>↗</span></button>
+      </section>
+      <section class="panel"><div class="section-title"><span class="step">02</span><h2>设置反演参数</h2></div>
+        <label class="field-label" for="threshold">相干性阈值 <output id="threshold-value">0.35</output></label>
+        <input id="threshold" type="range" min="0" max="0.95" step="0.05" value="0.35"><div class="range-labels"><span>0 · 保留更多像元</span><span>1 · 更严格</span></div>
+        <label class="field-label top-space" for="reference-mode">参考点</label><select id="reference-mode"><option value="auto">自动选择公共高相干点</option><option value="manual">指定像素坐标</option></select>
+        <div class="reference-inputs" id="reference-inputs" hidden><label>行 <input id="reference-row" type="number" min="0" step="1" value="5"></label><label>列 <input id="reference-col" type="number" min="0" step="1" value="5"></label></div>
+        <p class="field-note">位移相对于首期与参考像元。高相干性不代表参考点稳定，解读前请确认。</p>
+        <button id="run-button" class="primary" disabled>开始时序反演 <span>→</span></button>
+        <button id="cancel-button" class="text-btn cancel" hidden>停止计算</button>
+        <div class="run-status" aria-live="polite"><div><i id="status-dot"></i><span id="status-text">等待导入数据</span></div><progress id="progress" value="0" max="100" hidden></progress></div>
+      </section>
+      <div class="scope-note"><span>◎</span><p>适用于小型已解缠干涉栈。原始 SLC、PS / DS 及大范围生产处理，请使用完整 Python 与专业处理环境。</p></div>
+    </aside>
+    <div class="results">
+      <div class="metrics"><div><span>观测日期</span><b id="metric-epochs">—</b><small>期</small></div><div><span>干涉网络</span><b id="metric-pairs">—</b><small>对</small></div><div><span>有效像元</span><b id="metric-valid">—</b><small id="metric-valid-sub">%</small></div><div><span>速度范围</span><b id="metric-range">—</b><small>mm / 年</small></div></div>
+      <section class="panel map-panel"><div class="map-heading"><div><div class="eyebrow">SPATIAL PATTERN</div><h2>形变分布</h2></div><span class="data-badge" id="data-badge">等待数据</span></div>
+        <div class="map-tabs" role="tablist" aria-label="结果图层"><button role="tab" aria-selected="true" class="active" data-layer="velocity">LOS 速度</button><button role="tab" aria-selected="false" data-layer="lastDisplacement">末期位移</button><button role="tab" aria-selected="false" data-layer="temporalCoherence">时序相干性</button><button role="tab" aria-selected="false" data-layer="residual">拟合残差</button></div>
+        <div class="map-stage" id="map-stage"><div id="empty-state"><div class="empty-radar"><span></span><i></i></div><h3>你的第一幅形变图，从这里开始</h3><p>导入干涉栈，或点击左侧「试用模拟数据」</p></div><canvas id="map" hidden aria-label="形变分布栅格图，点击像素查看时序"></canvas><div id="map-hover" hidden></div></div>
+        <div class="map-footer"><span id="map-description">像素坐标 · 点击有效像元查看时序</span><div class="legend" id="legend" hidden><span id="legend-min"></span><i id="legend-bar"></i><span id="legend-max"></span><small id="legend-unit"></small></div></div>
+      </section>
+      <div class="lower-panels"><section class="panel chart-panel"><div class="card-heading"><div><div class="eyebrow">POINT HISTORY</div><h2>单点位移时序</h2></div><span id="point-label">未选择像元</span></div><div class="chart-stage"><canvas id="series-chart" aria-label="单点相对 LOS 位移时间序列"></canvas><p id="chart-empty">完成反演后，点击上方图中的像元</p></div><div class="point-selector"><label>行 <input type="number" id="point-row" min="0" step="1" value="0" disabled></label><label>列 <input type="number" id="point-col" min="0" step="1" value="0" disabled></label><button id="point-button" class="text-btn" disabled>查看时序 →</button></div></section>
+      <section class="panel export-panel"><div class="eyebrow">YOUR RESULTS</div><h2>导出成果</h2><p>完整时序与质量指标，可继续在 Python 中分析。</p><button class="download-btn" data-export="npz" disabled><span>反演结果 <small>NPZ</small></span><span>↓</span></button><button class="download-btn" data-export="csv" disabled><span>当前像元时序 <small>CSV</small></span><span>↓</span></button><button class="download-btn" data-export="json" disabled><span>处理报告 <small>JSON</small></span><span>↓</span></button><button id="png-button" class="download-btn" disabled><span>当前分布图 <small>PNG</small></span><span>↓</span></button><button class="inline-link input-download" data-export="stack" disabled>下载本次输入栈 ↙</button></section></div>
+      <div id="result-note" class="result-note" hidden></div>
+    </div>
+  </div>
+  <footer><span>InSAR Studio <i>·</i> Python SBAS</span><span>相对 LOS 测量 · mm / 年</span><a href="./downloads/insar_sbas.zip" download>下载完整 Python 程序 ↗</a></footer>
+</main>
+<dialog id="help-dialog"><button id="help-close" class="dialog-close" aria-label="关闭说明">×</button><div class="eyebrow">QUICK START</div><h2>开始你的第一次分析</h2><ol><li><b>先试用示例。</b>加载浏览器 Python 环境后，程序生成模拟干涉图并实际进行 SBAS 反演。模拟成果会清楚标记。</li><li><b>导入自己的 NPZ 栈。</b>使用完整 Python 程序的 <code>save_stack</code> 函数导出，或按下面格式准备。</li><li><b>设置参考点与相干性。</b>点击开始，完成后查看分布图、选点时序并下载结果。</li></ol><h3>NPZ 输入格式</h3><pre>dates: [N]，YYYYMMDD，按时间排序
+pairs: [M,2]，两期日期
+values: [M,行,列]，已解缠相位
+coherence: [M,行,列]，0～1
+unit: "radian" | "mm" | "m"
+wavelength_m: 雷达波长（米）
+phase_sign: -1 或 +1</pre><p>可选：<code>mask</code>、<code>components</code>、JSON 字符串 <code>metadata</code>。弧度数据的位移换算为 phase_sign × λ × phase / (4π)。默认 Sentinel-1 波长约 0.05547 m、符号 -1；真实数据需要确认。NPZ 不允许 pickle 对象数组。</p><h3>适用范围</h3><p>网页提供逐像元加权网络反演和拟合诊断；不进行大气、轨道、残余 DEM 或解缠错误改正。输入需预先配准、解缠并统一网格。图上的坐标为行列号，NPZ 导出保留源 metadata。</p><p>文件只在浏览器内处理，不上传影像。页面刷新或停止计算会清除计算会话。大数据受浏览器内存限制，文件上限 25 MiB、最多 36 期和 160 个干涉对，影像行列各不超过 512；解压大小、工作内存和计算量还会进行检查。</p><p>原始 SLC 到干涉栈的处理请使用完整 Python 程序连接 ISCE2 / MintPy；当前网页未连接云计算服务器。</p><p class="sources">开源处理参考：<a href="https://github.com/insarlab/MintPy" target="_blank" rel="noopener">MintPy ↗</a> · <a href="https://github.com/isce-framework/isce2" target="_blank" rel="noopener">ISCE2 ↗</a></p></dialog>
+<div id="toast" role="alert" hidden></div>
+<script src="./app.js" defer></script>
+</body></html>
+
+

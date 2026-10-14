@@ -1,0 +1,33 @@
+Browser scientific computing runtime
+====================================
+
+Pyodide 0.27.7
+Copyright Pyodide contributors and Mozilla.
+License: Mozilla Public License 2.0, reproduced in PYODIDE-LICENSE.txt.
+Source for the exact distributed version:
+https://github.com/pyodide/pyodide/tree/0.27.7
+https://github.com/pyodide/pyodide/archive/refs/tags/0.27.7.tar.gz
+Original binary distribution:
+https://cdn.jsdelivr.net/pyodide/v0.27.7/full/
+The runtime files are redistributed without modification.
+
+NumPy 2.0.2 (Pyodide 2024_0 WebAssembly build)
+Copyright NumPy Developers.
+License: BSD-3-Clause; the wheel includes NumPy and bundled dependency notices.
+Source:
+https://github.com/numpy/numpy/tree/v2.0.2
+Build recipe:
+https://github.com/pyodide/pyodide/tree/0.27.7/packages/numpy
+Wheel SHA-256 (verified against pyodide-lock.json):
+ebb61241d962b98b21597d7ce43b67668a6d5bab3acec4fbe958657320d7cd08
+
+CPython 3.12.7 is bundled as part of Pyodide; its Python Software Foundation
+license and third-party acknowledgements are reproduced in CPYTHON-LICENSE.txt.
+NumPy notices are additionally extracted in NUMPY-0-LICENSE.txt through
+NUMPY-3-LICENSE.txt. License reference:
+https://docs.python.org/3.12/license.html
+
+The application Python adapter and original SBAS solver are separate from
+these runtime distributions. Uploads and generated outputs stay in the
+browser worker and are not sent to a computation server.
+

@@ -14,7 +14,8 @@ Python and NumPy run in each visitor's browser using Pyodide 0.27.7 from jsDeliv
 
 Visitors can run the synthetic demonstration, import an unwrapped `.npz` interferogram stack, invert the connected SBAS network, inspect four result layers, view a selected pixel's time series, and download NPZ, CSV, JSON, or PNG outputs. The browser version limits inputs to 25 MiB, 36 acquisition dates, 160 interferograms, and a maximum 512 by 512 pixel grid per stack dimension.
 
-Original SLC focusing, interferogram generation, phase unwrapping, atmospheric/orbit/DEM corrections, and production-scale processing need a separately configured ISCE2/MintPy processing environment. They do not run on this static page.
+For local Sentinel-1 IW SLC processing, download the Python desktop program. Its GUI collects the SLC/DEM/AOI inputs and configures an ISCE2 topsStack → MintPy workflow with optional unwrapping-error, tropospheric-delay and residual-DEM corrections. Windows users need WSL2/Ubuntu and must install ISCE2, SNAPHU and MintPy there first. Raw scenes and results remain on the user's machine; this static page does not upload them or run a cloud job.
+
+The browser page itself handles pre-unwrapped small stacks only; raw SLC focusing, interferogram generation, phase unwrapping, corrections and production-scale processing run in the local desktop program through the open-source engines.
 
 Pyodide, CPython, and NumPy license notices are included in `runtime/`.
-

@@ -45,7 +45,7 @@
       <div id="result-note" class="result-note" hidden></div>
     </div>
   </div>
-  <footer><span>InSAR Studio <i>·</i> Python SBAS</span><span>相对 LOS 测量 · mm / 年</span><a href="./downloads/insar_sbas.zip" download>下载完整 Python 程序 ↗</a></footer>
+  <footer><span>InSAR Studio <i>·</i> Python SBAS</span><span>相对 LOS 测量 · mm / 年</span><a href="./downloads/insar_sbas.zip" download>下载本地 SLC 完整程序 ↗</a></footer>
 </main>
 <dialog id="help-dialog"><button id="help-close" class="dialog-close" aria-label="关闭说明">×</button><div class="eyebrow">QUICK START</div><h2>开始你的第一次分析</h2><ol><li><b>先试用示例。</b>加载浏览器 Python 环境后，程序生成模拟干涉图并实际进行 SBAS 反演。模拟成果会清楚标记。</li><li><b>导入自己的 NPZ 栈。</b>使用完整 Python 程序的 <code>save_stack</code> 函数导出，或按下面格式准备。</li><li><b>设置参考点与相干性。</b>点击开始，完成后查看分布图、选点时序并下载结果。</li></ol><h3>NPZ 输入格式</h3><pre>dates: [N]，YYYYMMDD，按时间排序
 pairs: [M,2]，两期日期
@@ -53,9 +53,7 @@ values: [M,行,列]，已解缠相位
 coherence: [M,行,列]，0～1
 unit: "radian" | "mm" | "m"
 wavelength_m: 雷达波长（米）
-phase_sign: -1 或 +1</pre><p>可选：<code>mask</code>、<code>components</code>、JSON 字符串 <code>metadata</code>。弧度数据的位移换算为 phase_sign × λ × phase / (4π)。默认 Sentinel-1 波长约 0.05547 m、符号 -1；真实数据需要确认。NPZ 不允许 pickle 对象数组。</p><h3>适用范围</h3><p>网页提供逐像元加权网络反演和拟合诊断；不进行大气、轨道、残余 DEM 或解缠错误改正。输入需预先配准、解缠并统一网格。图上的坐标为行列号，NPZ 导出保留源 metadata。</p><p>文件只在浏览器内处理，不上传影像。页面刷新或停止计算会清除计算会话。大数据受浏览器内存限制，文件上限 25 MiB、最多 36 期和 160 个干涉对，影像行列各不超过 512；解压大小、工作内存和计算量还会进行检查。</p><p>原始 SLC 到干涉栈的处理请使用完整 Python 程序连接 ISCE2 / MintPy；当前网页未连接云计算服务器。</p><p class="sources">开源处理参考：<a href="https://github.com/insarlab/MintPy" target="_blank" rel="noopener">MintPy ↗</a> · <a href="https://github.com/isce-framework/isce2" target="_blank" rel="noopener">ISCE2 ↗</a></p></dialog>
+phase_sign: -1 或 +1</pre><p>可选：<code>mask</code>、<code>components</code>、JSON 字符串 <code>metadata</code>。弧度数据的位移换算为 phase_sign × λ × phase / (4π)。默认 Sentinel-1 波长约 0.05547 m、符号 -1；真实数据需要确认。NPZ 不允许 pickle 对象数组。</p><h3>适用范围</h3><p>网页提供逐像元加权网络反演和拟合诊断；不进行大气、轨道、残余 DEM 或解缠错误改正。输入需预先配准、解缠并统一网格。图上的坐标为行列号，NPZ 导出保留源 metadata。</p><p>需要处理 Sentinel‑1 原始 SLC 时，下载桌面完整程序，在 MintPy / ISCE2 页填写输入和校正选项；Windows 用户需先安装 WSL2/Ubuntu，并配置 ISCE2、SNAPHU 与 MintPy。</p><p>文件只在浏览器内处理，不上传影像。页面刷新或停止计算会清除计算会话。大数据受浏览器内存限制，文件上限 25 MiB、最多 36 期和 160 个干涉对，影像行列各不超过 512；解压大小、工作内存和计算量还会进行检查。</p><p>原始 SLC 到干涉栈需通过下载的桌面程序调用 ISCE2 / MintPy；当前网页不连接云计算服务器。</p><p class="sources">本程序复用成熟开源引擎：<a href="https://github.com/insarlab/MintPy" target="_blank" rel="noopener">MintPy ↗</a> · <a href="https://github.com/isce-framework/isce2" target="_blank" rel="noopener">ISCE2 ↗</a></p></dialog>
 <div id="toast" role="alert" hidden></div>
 <script src="./app.js" defer></script>
 </body></html>
-
-
